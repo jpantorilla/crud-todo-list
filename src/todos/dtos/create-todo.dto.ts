@@ -1,4 +1,9 @@
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator'
+
 export class CreateTodoDto {
+  @IsNotEmpty()
   title: string
-  description: string
+
+  @IsOptional()
+  description?: string
 }
