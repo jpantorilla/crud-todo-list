@@ -3,13 +3,14 @@ import { Todo, TodoStatus } from './todo.entity';
 import { CreateTodoDto } from './dtos/create-todo.dto';
 import { UpdateTodoDto } from './dtos/update-todo.dto';
 import { TodosRepository } from './todos.repository';
+import { PaginationTodoDto } from './dtos/pagination-todo.dto';
 
 @Injectable()
 export class TodosService {
   constructor(private todoRepository: TodosRepository) {}
 
-  getTodoList(): Promise<Todo[]> {
-    return this.todoRepository.getTodos()
+  getTodoList(pagination: PaginationTodoDto): Promise<Todo[]> {
+    return this.todoRepository.getTodos(pagination)
   }
 
   createTodo(createTodoDto: CreateTodoDto): Promise<Todo> {

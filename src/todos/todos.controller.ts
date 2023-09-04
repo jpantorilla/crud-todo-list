@@ -1,16 +1,17 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
 import { Todo } from './todo.entity';
 import { TodosService } from './todos.service';
 import { CreateTodoDto } from './dtos/create-todo.dto';
 import { UpdateTodoDto } from './dtos/update-todo.dto';
+import { PaginationTodoDto } from './dtos/pagination-todo.dto';
 
 @Controller('todos')
 export class TodosController {
   constructor(private todoService: TodosService) {}
 
   @Get()
-  getTodoList(): Promise<Todo[]> {
-    return this.todoService.getTodoList()
+  getTodoList(@Query() pagination: PaginationTodoDto): Promise<Todo[]> {
+    return this.todoService.getTodoList(pagination)
   }
 
   @Post()

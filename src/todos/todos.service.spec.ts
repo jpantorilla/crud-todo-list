@@ -1,18 +1,32 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TodosService } from './todos.service';
+import { TodosRepository } from './todos.repository';
+
+const mockTodosRepository = () => {
+  getTodoList: jest.fn()
+}
 
 describe('TodosService', () => {
-  let service: TodosService;
+  let todosService: TodosService
+  let todosRepository: TodosRepository
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [TodosService],
-    }).compile();
+      providers: [
+        TodosService,
+        { provide: TodosRepository, useFactory: mockTodosRepository }
+      ],
+    }).compile()
 
-    service = module.get<TodosService>(TodosService);
-  });
+    todosService = module.get(TodosService)
+    todosRepository = module.get(TodosRepository)
+  })
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
+  //
+
+  describe('getTodoList', () => {
+    it('calls TodosRepository.getTodos and returns the result', async () => {
+      
+    })
+  })
 });
