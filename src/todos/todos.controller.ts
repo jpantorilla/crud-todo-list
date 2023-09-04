@@ -9,17 +9,17 @@ export class TodosController {
   constructor(private todoService: TodosService) {}
 
   @Get()
-  getTodoList(): Todo[] {
+  getTodoList(): Promise<Todo[]> {
     return this.todoService.getTodoList()
   }
 
   @Post()
-  createTodo(@Body() body: CreateTodoDto): Todo {
+  createTodo(@Body() body: CreateTodoDto): Promise<Todo> {
     return this.todoService.createTodo(body)
   }
 
   @Get('/:id')
-  getTodoById(@Param('id', ParseIntPipe) id: number): Todo {
+  getTodoById(@Param('id', ParseIntPipe) id: number): Promise<Todo> {
     return this.todoService.getTodoById(id)
   }
 
@@ -27,12 +27,12 @@ export class TodosController {
   updateTodo(
     @Param('id', ParseIntPipe) id: number,
     @Body() body: UpdateTodoDto
-  ): Todo {
+  ): Promise<Todo> {
     return this.todoService.updateTodo(id, body)
   }
 
   @Delete('/:id')
-  deleteTodo(@Param('id', ParseIntPipe) id: number) {
+  deleteTodo(@Param('id', ParseIntPipe) id: number): void {
     this.todoService.deleteTodo(id)
   }
 }

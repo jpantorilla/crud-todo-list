@@ -2,31 +2,23 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Todo, TodoStatus } from './todo.entity';
 import { CreateTodoDto } from './dtos/create-todo.dto';
 import { UpdateTodoDto } from './dtos/update-todo.dto';
+import { TodosRepository } from './todos.repository';
 
 @Injectable()
 export class TodosService {
-  todoList: Todo[] = []
+  constructor(private todoRepository: TodosRepository) {}
 
-  getTodoList(): Todo[] {
-    return this.todoList
+  getTodoList(): Promise<Todo[]> {
+    return this.todoRepository.getTodos()
   }
 
-  createTodo(createTodoDto: CreateTodoDto): Todo {
-    const { title, description } = createTodoDto
-    const todo: Todo = {
-      id: this.todoList.length + 1,
-      title,
-      description,
-      status: TodoStatus.PENDING
-    }
-
-    this.todoList.push(todo)
-    return todo
+  createTodo(createTodoDto: CreateTodoDto): Promise<Todo> {
+    return this.todoRepository.createTodo(createTodoDto)
   }
 
-  getTodoById(id: number): Todo {
-    const foundTodo = this.todoList.find(todo => todo.id === id)
-
+  async getTodoById(id: number): Promise<Todo> {
+    const foundTodo = await this.todoRepository.repo.findOne({ where: { id } })
+    
     if (!foundTodo) {
       throw new NotFoundException(`Todo with ID: ${id} not found.`)
     }
@@ -34,16 +26,20 @@ export class TodosService {
     return foundTodo
   }
 
-  updateTodo(id: number, updateTodoDto: UpdateTodoDto): Todo {
-    const foundTodo = this.getTodoById(id)
-    for (let [key, value] of Object.entries(updateTodoDto)) {
-      foundTodo[key] = value      
+  async updateTodo(id: number, updateTodoDto: UpdateTodoDto): Promise<Todo> {
+    let todo = await this.getTodoById(id)
+    todo = {
+      ...todo,
+      ...updateTodoDto
     }
 
-    return foundTodo
+    return this.todoRepository.repo.save(todo)
   }
 
-  deleteTodo(id: number): void {
-    this.todoList = this.todoList.filter(todo => todo.id !== id)
+  async deleteTodo(id: number): Promise<void> {
+    const result = await this.todoRepository.repo.delete(id)
+    if (result.affected === 0) {
+      throw new NotFoundException(`Todo with ID: ${id} not found.`)
+    }
   }
 }
